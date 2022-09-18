@@ -93,7 +93,42 @@ class MenuController extends BaseController
     ]
      */
 
-    public function getMenuItems() {
-        throw new \Exception('implement in coding task 3');
+    public function getMenuItems()
+    {
+        // throw new \Exception('implement in coding task 3');
+
+        try {
+            $menuItems = MenuItem::all();
+
+            $menuTree = $this->_buildMenuTree($menuItems);
+
+            // return json_encode($menuTree);
+            return response()->json(json_encode($menuTree), 200);
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
+
+    private function _buildMenuTree($items, $parent = 0)
+    {
+        foreach ($items as $item) {
+            if ($item['parent_id'] == $parent) {
+                if ($this->_has_children($item, $item->id)) {
+                    return $this->_buildMenuTree($item);
+                }
+                return $item;
+            }
+        }
+    }
+
+    private function _has_children($items, $id)
+    {
+        foreach ($items as $item) {
+            if ($item['parent_id'] == $id)
+                return true;
+        }
+        return false;
+    }
+
+    /* In all the task just need to find what is the expected output json format do the test function wants. that's where I am stuck. Thanks */
 }

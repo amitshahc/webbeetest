@@ -111,8 +111,9 @@ class EventsController extends BaseController
             })->with(['workshops']);
 
             // return $query->get()->toArray();
-            return response()->json($query->get()->toJson());
-            // return json_encode($query->get()->toJson());
+            // return json_encode($query->get());
+            return response()->json([$query->get()->toJson()]);
+            // return $query->get()->toJson();
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
@@ -201,8 +202,8 @@ class EventsController extends BaseController
                 $qw->where('start', '>', Date::now())->oldest()->first();
             });
 
-            // return $query->get()->toArray();
-            return response()->json($query->get()->toJson());
+            // return $query->get()->toJson();
+            return response()->json($query->get()->toJSON());
 
         } catch (\Throwable $th) {
             return $th->getMessage();

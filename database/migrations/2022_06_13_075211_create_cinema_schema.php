@@ -37,7 +37,79 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
-        throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
+        // throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
+
+        Schema::create('movies', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('description');
+            $table->int('duration');
+            $table->string('language', 50);
+            $table->string('country', 100);
+            $table->string('genre', 50);
+            $table->date('release_date');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('cinemas', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->int('total_cinema_halls');
+            $table->foreignId('city_id')->on('cities')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('cinema_halls', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->int('total_seats');
+            $table->foreignId('cinema_id')->on('cinemas')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('shows', function (Blueprint $table) {
+            $table->id();
+            $table->datetime('date');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
+            $table->foreignId('movie_id')->on('movies')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('cinema_hall_id')->on('cinema_halls')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('cinema_seats', function (Blueprint $table) {
+            $table->id();
+            $table->string('seat_number', 10);
+            $table->enum('type', ['golden', 'silver', 'vip', 'other...']);
+            $table->foreignId('cinema_hall_id')->on('cinema_halls')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('show_seats', function (Blueprint $table) {
+            $table->id();
+            $table->double('price', 10, 2);
+            $table->enum('status', ['']);
+            $table->foreignId('cinema_seat_id')->on('cinema_seats')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('show_id')->on('show_seats')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('booking_id')->on('bookings')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('bookings', function (Blueprint $table) {
+            $table->id();
+            $table->int('number_of_seats', 10);
+            $table->enum('status', ['']);
+            $table->foreignId('user_id')->on('users')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('show_id')->on('show_seats')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -47,5 +119,12 @@ class CreateCinemaSchema extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('movies');
+        Schema::dropIfExists('cinemas');
+        Schema::dropIfExists('cinema_halls');
+        Schema::dropIfExists('shows');
+        Schema::dropIfExists('cinema_seats');
+        Schema::dropIfExists('show_seats');
+        Schema::dropIfExists('bookings');
     }
 }

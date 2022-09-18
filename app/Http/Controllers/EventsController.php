@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Date;
 
 class EventsController extends BaseController
 {
-    public function getWarmupEvents() {
+    public function getWarmupEvents()
+    {
         return Event::all();
     }
 
@@ -100,15 +101,18 @@ class EventsController extends BaseController
     ]
      */
 
-    public function getEventsWithWorkshops() {
-         // throw new \Exception('implement in coding task 1');
+    public function getEventsWithWorkshops()
+    {
+        // throw new \Exception('implement in coding task 1');
 
-         try {
+        try {
             $query = Event::whereHas('workshops',  function ($qw) {
-                $qw->where('start', '>', Date::now());
+                $qw->where('start', '>', Date::now())->oldest()->first();
             })->with(['workshops']);
 
-            return $query->get();
+            // return $query->get()->toArray();
+            return response()->json($query->get()->toJson());
+            // return json_encode($query->get()->toJson());
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
@@ -189,7 +193,19 @@ class EventsController extends BaseController
     ```
      */
 
-    public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+    public function getFutureEventsWithWorkshops()
+    {
+        // throw new \Exception('implement in coding task 2');
+        try {
+            $query = Event::whereHas('workshops',  function ($qw) {
+                $qw->where('start', '>', Date::now())->oldest()->first();
+            });
+
+            // return $query->get()->toArray();
+            return response()->json($query->get()->toJson());
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
 }

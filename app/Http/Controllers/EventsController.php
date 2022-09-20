@@ -107,10 +107,10 @@ class EventsController extends BaseController
 
         try {
             $query = Event::whereHas('workshops',  function ($qw) {
-                $qw->where('start', '>', Date::now())->oldest()->first();
+                // return $qw->where('start', '>', Date::now());
             })->with(['workshops']);
 
-            // return $query->get()->toArray();
+            return $query->get();
             // return json_encode($query->get());
             return response()->json([$query->get()->toJson()]);
             // return $query->get()->toJson();
@@ -199,10 +199,10 @@ class EventsController extends BaseController
         // throw new \Exception('implement in coding task 2');
         try {
             $query = Event::whereHas('workshops',  function ($qw) {
-                $qw->where('start', '>', Date::now())->oldest()->first();
-            });
+                $qw->where('start', '>', Date::now())->oldest();
+            })->with(['workshops']);
 
-            // return $query->get()->toJson();
+            return $query->get();
             return response()->json($query->get()->toJSON());
 
         } catch (\Throwable $th) {
